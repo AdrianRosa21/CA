@@ -1,0 +1,423 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    @if (!(ViewData["HideNav"] as bool? ?? false))
+    {
+        @await Html.PartialAsync("_Nav")
+    }
+
+    @await Html.PartialAsync("_Nav")
+    // ÚNICA FUENTE DE VERDAD PARA EL TEMA
+    var themeCookie = HttpContextAccessor.HttpContext.Request.Cookies["Theme"];
+    var isDarkMode = themeCookie == "dark";
+}
+<!DOCTYPE html>
+@*
+   ESTA ES LA CORRECCIÓN CLAVE.
+   Ahora usa la variable 'isDarkMode' que SÍ existe en cada carga de página.
+*@
+<html lang="es" class="@(isDarkMode ? "dark-theme" : "")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Zity</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons y CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script>
+        // Este script se ejecuta ANTES de que la página sea visible para el usuario.
+        (function() {
+            // Lee la cookie directamente desde el navegador con JavaScript.
+            const isDark = document.cookie.split(';').some(c => c.trim().startsWith('Theme=dark'));
+            if (isDark) {
+                // Si la cookie existe, se asegura de que la clase 'dark-theme' esté en el <html>
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
+
+    <!-- ESTILOS PERSONALIZADOS DE ZITY -->
+    <style>
+        :root {
+            /* Paleta Modo Claro */
+            --zity-blue: #0d6efd;
+            --zity-purple: #861AF5;
+            --zity-dark: #121212;
+            --zity-footer-bg: #292828;
+            --zity-text: #212529;
+            --zity-text-muted: #5a5a5a;
+            --zity-bg: #f9f9f9;
+            --zity-card-bg: #ffffff;
+            --zity-card-border: #e9ecef;
+            --font-primary: 'Poppins', sans-serif;
+            --font-headings: 'Manrope', sans-serif;
+        }
+
+        /* PALETA MODO OSCURO */
+        html.dark-theme {
+            --zity-blue: #409cff;
+            --zity-purple: #9d3eff;
+            --zity-text: #e8e6e3;
+            --zity-text-muted: #8b949e;
+            --zity-bg: #0d1117;
+            --zity-card-bg: #161b22;
+            --zity-card-border: #30363d;
+            --zity-footer-bg: #010409;
+        }
+
+        /* ESTILOS GENERALES */
+        body {
+            font-family: var(--font-primary);
+            color: var(--zity-text);
+            background-color: var(--zity-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        main {
+            flex-grow: 1;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-headings);
+            font-weight: 800;
+        }
+
+        .navbar {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .navbar-brand {
+            font-family: var(--font-headings);
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--zity-blue);
+        }
+
+        .nav-link {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background-color: var(--zity-blue);
+            border-color: var(--zity-blue);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .zity-card {
+            border: 1px solid var(--zity-card-border);
+            background-color: var(--zity-card-bg);
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .section-purple {
+            background-color: var(--zity-purple);
+            color: white;
+            border-radius: 1.5rem;
+        }
+
+        .banner-dark {
+            background-color: var(--zity-dark);
+            color: white;
+            border-radius: 1.5rem;
+        }
+
+        /* FOOTER */
+        .footer {
+            background-color: var(--zity-footer-bg);
+            color: #adb5bd;
+        }
+
+            .footer h6 {
+                color: #fff;
+                font-weight: 600;
+                font-family: var(--font-primary);
+            }
+
+            .footer a {
+                color: #adb5bd;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+                .footer a:hover {
+                    color: #fff;
+                }
+
+            .footer .tag {
+                display: inline-block;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                padding: 0.25rem 0.75rem;
+                border-radius: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .footer .social-icon {
+                color: #fff;
+                background-color: rgba(255, 255, 255, 0.1);
+                width: 40px;
+                height: 40px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+            }
+
+        /* Ajustes específicos para el MODO OSCURO */
+        html.dark-theme body,
+        html.dark-theme .bg-white {
+            background-color: var(--zity-bg) !important;
+            color: var(--zity-text);
+        }
+
+        html.dark-theme .table {
+            --bs-table-bg: var(--zity-card-bg); /* Fondo de la tabla */
+            --bs-table-color: var(--zity-text); /* Color del texto */
+            --bs-table-border-color: var(--zity-card-border);
+            --bs-table-striped-bg: rgba(255, 255, 255, 0.03); /* Fondo de filas alternas */
+            --bs-table-hover-bg: rgba(255, 255, 255, 0.05); /* Fondo al pasar el mouse */
+        }
+        /* Cabecera de la tabla */
+        html.dark-theme .table-light {
+            --bs-table-bg: #222938; /* Un fondo ligeramente más claro para la cabecera */
+            --bs-table-color: var(--zity-text);
+            --bs-table-border-color: var(--zity-card-border);
+        }
+
+        /* Enlaces dentro de tablas */
+        html.dark-theme .table a {
+            color: var(--zity-blue) !important;
+        }
+
+        /* Bordes internos del perfil (para separar la barra lateral del contenido) */
+        html.dark-theme .nav-pills .nav-link:not(.active) {
+            color: var(--zity-text-muted);
+        }
+
+        html.dark-theme .nav-pills .nav-link:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        /* Quitar el borde en la barra lateral */
+        html.dark-theme .col-lg-3 .zity-card {
+            border: none !important;
+        }
+
+        html.dark-theme .nav-tabs .nav-link {
+            color: var(--zity-text-muted); /* Color para las pestañas inactivas */
+            border-color: transparent;
+        }
+
+            html.dark-theme .nav-tabs .nav-link.active {
+                color: var(--zity-text) !important;
+                background-color: var(--zity-card-bg);
+                border-color: var(--zity-card-border) var(--zity-card-border) var(--zity-card-bg); /* Oculta el borde inferior */
+            }
+
+            html.dark-theme .nav-tabs .nav-link:hover {
+                border-color: var(--zity-card-border);
+                color: var(--zity-text);
+            }
+
+        html.dark-theme .tab-content {
+            border: 1px solid var(--zity-card-border);
+            border-top: none;
+            border-radius: 0 0 .5rem .5rem;
+            padding: 1.5rem;
+            background-color: var(--zity-card-bg);
+        }
+
+
+        /* CORRECCIÓN 2: Texto ilegible del Dropdown del Perfil */
+        html.dark-theme .dropdown-item:hover,
+        html.dark-theme .dropdown-item:focus {
+            background-color: var(--zity-blue);
+            color: #fff !important; /* Texto blanco al pasar el mouse */
+        }
+
+        html.dark-theme .dropdown-header {
+            color: var(--zity-text-muted);
+        }
+
+        html.dark-theme .dropdown-divider {
+            border-top-color: var(--zity-card-border);
+        }
+
+
+        /* CORRECCIÓN 3: Botones 'outline' (Crear Nuevo Anuncio) */
+        html.dark-theme .btn-outline-primary {
+            --bs-btn-color: var(--zity-blue);
+            --bs-btn-border-color: var(--zity-blue);
+            --bs-btn-hover-bg: var(--zity-blue);
+            --bs-btn-hover-border-color: var(--zity-blue);
+            --bs-btn-hover-color: var(--zity-card-bg);
+        }
+
+
+        /* Estilos para los Modales (Formularios) en Modo Oscuro */
+        html.dark-theme .modal-content {
+            background-color: var(--zity-card-bg);
+            color: var(--zity-text);
+            border: 1px solid var(--zity-card-border);
+        }
+
+        html.dark-theme .modal-header {
+            border-bottom: 1px solid var(--zity-card-border);
+        }
+
+            html.dark-theme .modal-header .btn-close {
+                filter: invert(1) grayscale(100%) brightness(200%); /* <-- Truco para hacer la 'X' blanca */
+            }
+
+        html.dark-theme .modal-footer {
+            border-top: 1px solid var(--zity-card-border);
+        }
+
+        /* Estilos para los Formularios DENTRO de un Modal Oscuro */
+        html.dark-theme .modal .form-control,
+        html.dark-theme .modal .form-select {
+            background-color: var(--zity-bg); /* Un fondo ligeramente más oscuro para el campo */
+            border-color: var(--zity-card-border);
+            color: var(--zity-text);
+        }
+
+            html.dark-theme .modal .form-control::placeholder {
+                color: var(--zity-text-muted);
+            }
+
+            html.dark-theme .modal .form-control:focus,
+            html.dark-theme .modal .form-select:focus {
+                border-color: var(--zity-blue);
+                background-color: var(--zity-bg);
+                color: var(--zity-text);
+            }
+
+
+        html.dark-theme .nav-link,
+        html.dark-theme .text-dark,
+        html.dark-theme .dropdown-item {
+            color: var(--zity-text) !important;
+        }
+
+        html.dark-theme .dropdown-menu {
+            background-color: var(--zity-card-bg);
+            border-color: var(--zity-card-border);
+        }
+
+        html.dark-theme .navbar {
+            background-color: var(--zity-card-bg) !important;
+            border-bottom: 1px solid var(--zity-card-border);
+        }
+
+        html.dark-theme .text-muted,
+        html.dark-theme .text-secondary {
+            color: var(--zity-text-muted) !important;
+        }
+
+        html.dark-theme .blockquote-footer {
+            color: var(--zity-text-muted) !important;
+        }
+
+        /* Mejora la visibilidad de los bordes */
+        html.dark-theme .border-top,
+        html.dark-theme .border-bottom,
+        html.dark-theme hr {
+            border-color: var(--zity-card-border) !important;
+        }
+
+        /* Botones "outline" */
+        html.dark-theme .btn-outline-secondary {
+            --bs-btn-color: var(--zity-text-muted);
+            --bs-btn-border-color: var(--zity-text-muted);
+            --bs-btn-hover-bg: var(--zity-text-muted);
+            --bs-btn-hover-color: var(--zity-card-bg);
+        }
+
+        /* Específico para los gráficos del Dashboard de Admin */
+        html.dark-theme .apexcharts-legend-text {
+            color: var(--zity-text) !important;
+        }
+
+        html.dark-theme text {
+            fill: var(--zity-text-muted);
+        }
+
+        html.dark-theme .navbar-brand {
+            color: var(--zity-blue);
+        }
+
+        html.dark-theme .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28232, 230, 227, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+
+    </style>
+</head>
+@* Estilos específicos por vista *@
+@await RenderSectionAsync("Styles", required: false)
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        
+    </header>
+
+    <main role="main" class="flex-grow-1">
+        @RenderBody()
+    </main>
+
+    <footer class="footer pt-5 pb-4 mt-auto">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h6>Zity</h6>
+                    <p class="small">Una pequeña página creada con el fin de mantener la armonía e informar a la población.</p>
+                </div>
+                <div class="col-md-2 offset-md-1">
+                    <h6>Categoría</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Foros</a></li>
+                        <li><a href="#">Noticias</a></li>
+                        <li><a href="#">Incidentes</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2">
+                    <h6>Tags</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="tag">Debate</span>
+                        <span class="tag">Informativo</span>
+                        <span class="tag">Redes</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <h6>Síguenos en</h6>
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="#" class="social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            <div class="text-center small">
+                Copyright © @DateTime.Now.Year Todos los derechos están reservados | Zity
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

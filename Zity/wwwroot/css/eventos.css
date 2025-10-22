@@ -1,0 +1,49 @@
+﻿/* 🔒 Encerrado a #eventos-page */
+#eventos-page {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 24px;
+    font-family: "Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+
+    /* estética “chiva” solo aquí */
+    #eventos-page .bg-gradient {
+        border-radius: 12px;
+        color: #fff;
+    }
+
+    #eventos-page .card-img-top {
+        height: 240px;
+        object-fit: cover;
+    }
+
+    #eventos-page .evt-chip {
+        background: #0ea5e910;
+        border: 1px solid #0ea5e94d;
+        color: #0ea5e9;
+        padding: .25rem .5rem;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: .8rem;
+    }
+
+    #eventos-page .evt-date {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: #111827cc;
+        color: #fff;
+        padding: .35rem .6rem;
+        border-radius: .5rem;
+        font-weight: 700;
+        font-size: .8rem;
+    }
+
+    #eventos-page .rating i {
+        color: #fbbf24;
+    }
+
+    /* (opcional) mapa */
+    #eventos-page #map {
+        background: #f8fafc;
+    }

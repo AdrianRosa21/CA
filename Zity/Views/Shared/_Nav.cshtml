@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var session = Context.Session;
+    var userId = session.GetInt32("UserId");
+    var roleId = session.GetInt32("UserRoleId") ?? 0;  // 0 = no logueado
+    var userName = session.GetString("UserName") ?? "Invitado";
+
+    // Área home según el id de rol
+    string areaHome = roleId switch
+    {
+        3 => "Alcalde",
+        2 => "Admin",
+        _ => "User"
+    };
+
+    // helper para marcar activo
+    string curArea = (ViewContext.RouteData.Values["area"] as string) ?? "";
+    string curCtrl = (ViewContext.RouteData.Values["controller"] as string) ?? "";
+    bool Active(string a, string c) =>
+        string.Equals(curArea, a, StringComparison.OrdinalIgnoreCase) &&
+        string.Equals(curCtrl, c, StringComparison.OrdinalIgnoreCase);
+}
+<nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold" asp-area="@areaHome" asp-controller="Home" asp-action="Index">
+            <i class="bi bi-bullseye"></i> zity
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                @if (userId is null)
+                {
+                    <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Regístrate</a></li>
+                }
+                else if (roleId == 3)
+                {
+
+                    <!-- ADMIN -->
+                    <li class="nav-item">
+                        <a class="nav-link @(Active("Admin", "Home") ? "active" : "")"
+                           asp-area="Admin" asp-controller="Home" asp-action="Index">Dashboard</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Usuarios</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Moderation" asp-action="Index">Moderación</a></li>
+                }
+                else if (roleId == 2)
+                {
+
+                    <!-- ALCALDE -->
+                    <li class="nav-item">
+                        <a class="nav-link @(Active("Alcalde", "Home") ? "active" : "")"
+                           asp-area="Alcalde" asp-controller="Home" asp-action="Index">Tablero</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" asp-area="Alcalde" asp-controller="Proyectos" asp-action="Index">Proyectos</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="Alcalde" asp-controller="Comunicados" asp-action="Index">Comunicados</a></li>
+                }
+                else
+                {
+
+                    <!-- USER -->
+                    <li class="nav-item">
+                        <a class="nav-link @(Active("User", "Home") ? "active" : "")"
+                           asp-area="User" asp-controller="Home" asp-action="Index">Inicio</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" asp-area="User" asp-controller="Home" asp-action="incidencias">Mapa</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="User" asp-controller="Home" asp-action="Eventos">Eventos</a></li>
+                }
+            </ul>
+
+            <ul class="navbar-nav">
+                @if (userId is null)
+                {
+                    <li class="nav-item">
+                        <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">Iniciar sesión</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item me-2"><span class="navbar-text">Hola, @userName (ID Rol: @roleId)</span></li>
+                    <li class="nav-item">
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-outline-danger">Salir</button>
+                        </form>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

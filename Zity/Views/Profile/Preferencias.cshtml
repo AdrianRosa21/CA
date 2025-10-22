@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Preferencias";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- RENDERIZA LA BARRA LATERAL REUTILIZABLE -->
+        <div class="col-lg-3">
+            <partial name="_ProfileNav" />
+        </div>
+
+        <!-- CONTENIDO ÚNICO DE PREFERENCIAS -->
+        <div class="col-lg-9">
+            <h2 class="mb-4">Preferencias</h2>
+
+            <!-- MENSAJE DE ÉXITO -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+
+            <div class="zity-card p-4">
+                <!-- Formularios para las acciones -->
+                <h5 class="fw-bold">Notificaciones</h5>
+                <p class="text-muted">Controla cómo te notificamos.</p>
+                <form asp-action="HabilitarNotificaciones" asp-controller="Profile" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-primary">Habilitar notificaciones</button>
+                </form>
+                <form asp-action="DeshabilitarNotificaciones" asp-controller="Profile" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-danger">Deshabilitar notificaciones</button>
+                </form>
+
+                <hr class="my-4" />
+
+                <h5 class="fw-bold">Privacidad</h5>
+                <p class="text-muted">Activa el modo anónimo para reportar incidencias sin que tu nombre sea público.</p>
+                <form asp-action="HabilitarAnonimo" asp-controller="Profile" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-primary">Habilitar Anónimo</button>
+                </form>
+                <form asp-action="DeshabilitarAnonimo" asp-controller="Profile" method="post" class="d-inline-block">
+                    <button type="submit" class="btn btn-danger">Deshabilitar Anónimo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

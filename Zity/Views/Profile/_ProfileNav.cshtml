@@ -1,0 +1,34 @@
+﻿@{
+    var activePage = ViewData["ActivePage"] as string;
+}
+<div class="zity-card p-3">
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+            <a asp-action="Index" asp-controller="Profile"
+               class="nav-link @(activePage == "Profile" ? "active" : "text-dark")">Perfil de Usuario</a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="Preferencias" asp-controller="Profile"
+               class="nav-link @(activePage == "Preferencias" ? "active" : "text-dark")">Preferencias</a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="HistorialReportes" asp-controller="Profile"
+               class="nav-link @(activePage == "Historial" ? "active" : "text-dark")">Historial Reportes</a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="ParticipacionesForo" asp-controller="Profile"
+               class="nav-link @(activePage == "Foro" ? "active" : "text-dark")">Participaciones Foro</a>
+        </li>
+        <li class="nav-item">
+            <a asp-action="EventosCreados" asp-controller="Profile"
+               class="nav-link @(activePage == "Eventos" ? "active" : "text-dark")">Eventos Creados</a>
+        </li>
+    </ul>
+    <hr />
+    <!-- FORMULARIO CORRECTO PARA LOGOUT -->
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-grid">
+        <button type="submit" class="btn btn-link nav-link text-danger text-start p-2">
+            <i class="bi bi-box-arrow-left me-2"></i>Cerrar Sesión
+        </button>
+    </form>
+</div>

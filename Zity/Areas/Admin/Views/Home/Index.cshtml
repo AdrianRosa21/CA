@@ -1,0 +1,217 @@
+﻿@{
+    ViewData["Title"] = "Dashboard del Administrador";
+}
+
+@* Script para el gráfico (usamos una librería ligera: ApexCharts) *@
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // GRÁFICO 1: INCIDENCIAS
+            var optionsIncidencias = {
+                chart: { type: 'donut', height: 250 },
+                series: [12, 5, 8], // Datos de ejemplo: Resueltas, En Proceso, Nuevas
+                labels: ['Resueltas', 'En Proceso', 'Nuevas'],
+                colors: ['#28a745', '#ffc107', '#dc3545'],
+                legend: { position: 'bottom', fontFamily: 'Poppins' },
+                dataLabels: { enabled: false },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'TOTAL',
+                                    formatter: function (w) { return w.globals.seriesTotals.reduce((a, b) => a + b, 0) }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var chartIncidencias = new ApexCharts(document.querySelector("#chart-incidencias"), optionsIncidencias);
+            chartIncidencias.render();
+
+            // GRÁFICO 2: USUARIOS
+            var optionsUsuarios = {
+                chart: { type: 'donut', height: 250 },
+                series: [254, 8], // Datos de ejemplo: Activos, Nuevos Hoy
+                labels: ['Activos', 'Nuevos Hoy'],
+                colors: ['#0d6efd', '#6f42c1'],
+                legend: { position: 'bottom', fontFamily: 'Poppins' },
+                dataLabels: { enabled: false },
+                 plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'TOTAL',
+                                    formatter: function (w) { return w.globals.seriesTotals.reduce((a, b) => a + b, 0) }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            var chartUsuarios = new ApexCharts(document.querySelector("#chart-usuarios"), optionsUsuarios);
+            chartUsuarios.render();
+        });
+    </script>
+}
+
+<!-- CÓDIGO DEL MODAL PARA CREAR ANUNCIOS -->
+<div class="modal fade" id="announcementModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-megaphone-fill me-2"></i>Crear Nuevo Anuncio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Título del Anuncio</label>
+                        <input type="text" class="form-control" placeholder="Ej: Nueva jornada de limpieza">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contenido</label>
+                        <textarea class="form-control" rows="4" placeholder="Describe los detalles del anuncio..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirigido a</label>
+                        <select class="form-select">
+                            <option selected>Todos los usuarios</option>
+                            <option>Municipio específico...</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Publicar Anuncio</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container py-4">
+
+    <!-- =========== CABECERA DEL DASHBOARD =========== -->
+    <header class="d-flex flex-wrap align-items-center justify-content-between pb-4 mb-4 border-bottom">
+        <div>
+            <h1 class="h2 fw-bold mb-1" style="font-family: 'Manrope', sans-serif;">Admin Dashboard</h1>
+            <p class="text-muted">Vista general de la plataforma Zity.</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="avatar-wrap">
+                <div class="avatar-ring"></div>
+                <div class="avatar" title="Administrador Activo">A</div>
+            </div>
+            <a class="btn icon-btn" href="/" target="_blank" title="Ir al Sitio Público">
+                <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- =========== SECCIÓN DE ESTADÍSTICAS VISUALES =========== -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8">
+            <div class="zity-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Estado de Incidencias</h5>
+                <div id="chart-incidencias"></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="zity-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Actividad de Usuarios</h5>
+                <div id="chart-usuarios"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========== TARJETAS DE ACCIÓN RÁPIDA =========== -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+            <div class="zity-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0 text-muted">Eventos por Aprobar</p>
+                        <h2 class="fw-bold">3</h2>
+                    </div>
+                    <div class="icon-btn bg-warning-subtle text-warning fs-3">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <div class="zity-card p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0 text-muted">Contenido Reportado</p>
+                        <h2 class="fw-bold">7</h2>
+                    </div>
+                    <div class="icon-btn bg-secondary-subtle text-secondary fs-3">
+                        <i class="bi bi-flag"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <button type="button" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-4 shadow-soft"
+                    data-bs-toggle="modal" data-bs-target="#announcementModal">
+                <i class="bi bi-plus-circle-dotted fs-1 mb-2"></i>
+                <span class="fw-semibold">Crear Nuevo Anuncio</span>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- =========== TABLA DE ACTIVIDAD RECIENTE =========== -->
+    <section>
+        <h3 class="fw-bold mb-3" style="font-family: 'Manrope', sans-serif;">Flujo de Moderación</h3>
+        <div class="zity-card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3 px-4">Tipo</th>
+                                <th class="py-3 px-4">Descripción</th>
+                                <th class="py-3 px-4">Usuario</th>
+                                <th class="py-3 px-4" class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Fila de ejemplo 1 -->
+                            <tr>
+                                <td class="px-4"><span class="badge text-bg-warning">Evento</span></td>
+                                <td class="fw-semibold">"Feria de emprendedores locales"</td>
+                                <td>emprende_sv</td>
+                                <td class="text-end px-4">
+                                    <a href="#" class="btn btn-sm btn-success">Aprobar</a>
+                                    <a href="#" class="btn btn-sm btn-outline-danger">Rechazar</a>
+                                </td>
+                            </tr>
+                            <!-- Fila de ejemplo 2 -->
+                            <tr>
+                                <td class="px-4"><span class="badge text-bg-danger">Incidente</span></td>
+                                <td class="fw-semibold">Reporte de bache en Av. Central</td>
+                                <td>carlos_ruiz</td>
+                                <td class="text-end px-4">
+                                    <a href="#" class="btn btn-sm btn-outline-primary">Ver y Asignar</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

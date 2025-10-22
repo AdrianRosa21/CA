@@ -1,0 +1,258 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Regístrate";
+
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Zity</title>
+
+    <!-- Google Fonts y Bootstrap -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- ESTILOS PARA LA PÁGINA DE AUTENTICACIÓN -->
+    <style>
+        :root {
+            --zity-blue: #0d6efd;
+            --zity-bg: #f8f9fa; /* Fondo gris claro */
+            --zity-text: #212529;
+            --zity-text-muted: #6c757d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--zity-bg);
+            color: var(--zity-text);
+            /* Centrado vertical y horizontal */
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            background-color: #fff;
+            max-width: 480px;
+            width: 100%;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.07);
+            padding: 2rem;
+        }
+
+            .auth-card h2 {
+                font-family: 'Manrope', sans-serif;
+                font-weight: 800;
+                margin-bottom: 0.5rem;
+            }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--zity-text);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+        }
+
+            .form-control:focus {
+                border-color: var(--zity-blue);
+                box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            }
+
+        .btn-primary {
+            background-color: var(--zity-blue);
+            border-color: var(--zity-blue);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-weight: 500;
+        }
+
+        a {
+            color: var(--zity-blue);
+            text-decoration: none;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #e9ecef;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+        }
+        /* ESTA ES LA REGLA QUE FALTABA */
+        .auth-card a {
+            color: var(--zity-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .auth-card a:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+<body>
+    <div class="auth-card position-relative">
+        <button type="button" class="btn-close close-button" aria-label="Close"></button>
+        <div class="card-body">
+            <h2 class="card-title text-center">Regístrate</h2>
+            <p class="text-center text-muted mb-4">
+                ¿Ya tienes tu cuenta en Zity?
+                <a asp-action="Login" asp-controller="Account">Inicia sesión ahora</a>
+            </p>
+
+            <form asp-controller="Account" asp-action="Register" method="post" id="registerForm">
+                <input type="hidden" name="lat" id="lat" />
+                <input type="hidden" name="lon" id="lon" />
+
+                <!-- tus campos existentes... -->
+                <!-- NOMBRE -->
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input name="nombre" id="nombre" type="text" class="form-control" required>
+                </div>
+
+                <!-- APELLIDO -->
+                <div class="mb-3">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input name="apellido" id="apellido" type="text" class="form-control" required>
+                </div>
+
+                <!-- FECHA NACIMIENTO -->
+                <div class="mb-3">
+                    <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+                    <input name="fecha_nacimiento" id="fecha_nacimiento" type="date" class="form-control">
+                </div>
+
+                <!-- CORREO -->
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo electrónico</label>
+                    <input name="email" id="email" type="email" class="form-control" required>
+                </div>
+
+                <!-- TELEFONO -->
+                <div class="mb-3">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input name="telefono" id="telefono" type="tel" class="form-control" placeholder="+503 7xx xxxx">
+                </div>
+
+                <!-- MUNICIPIO (obligatorio; solo del “Este”) -->
+                <div class="mb-3">
+                    <label for="id_municipio" class="form-label">Municipio (San Salvador Este)</label>
+                    <select name="id_municipio" id="id_municipio" class="form-select" required>
+                        <option value="">Selecciona tu municipio…</option>
+                        @if (ViewBag.MunicipiosEste != null)
+                        {
+                            foreach (var m in ViewBag.MunicipiosEste)
+                            {
+                                <option value="@m.id_municipio">@m.nombre_municipio</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- CONTRASEÑA -->
+                <div class="mb-3">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-group">
+                        <input name="password" id="password" type="password" class="form-control"
+                               placeholder="••••••••" minlength="6" required>
+                        <button type="button" class="btn btn-outline-secondary" id="togglePwd" tabindex="-1">👁️</button>
+                    </div>
+                    <div class="form-text">Mínimo 6 caracteres.</div>
+                </div>
+
+                <!-- CONFIRMAR CONTRASEÑA (solo front-end) -->
+                <div class="mb-3">
+                    <label for="password2" class="form-label">Confirmar contraseña</label>
+                    <input id="password2" type="password" class="form-control" placeholder="Repite tu contraseña" required>
+                    <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+                </div>
+
+                <!-- INFO DE UBICACIÓN (solo display) -->
+                <div class="mb-2">
+                    <small class="text-muted" id="geoInfo">Intentando obtener tu ubicación…</small>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Regístrate</button>
+                </div>
+            </form>
+
+            <script>
+
+
+                              // Mostrar/ocultar contraseña
+                document.getElementById('togglePwd').addEventListener('click', function () {
+                  const pwd = document.getElementById('password');
+                  pwd.type = (pwd.type === 'password') ? 'text' : 'password';
+                });
+
+                // Validación simple: contraseñas iguales
+                document.getElementById('registerForm').addEventListener('submit', function (e) {
+                  const p1 = document.getElementById('password').value;
+                  const p2 = document.getElementById('password2').value;
+                  const p2Input = document.getElementById('password2');
+
+                  if (p1 !== p2) {
+                    e.preventDefault();
+                    p2Input.classList.add('is-invalid');
+                    p2Input.focus();
+                  } else {
+                    p2Input.classList.remove('is-invalid');
+                  }
+                });
+
+                               // Mostrar coordenadas detectadas
+                const geoInfo = document.getElementById('geoInfo');
+                const setGeoInfo = () => {
+                  const lat = document.getElementById('lat').value;
+                  const lon = document.getElementById('lon').value;
+                  if (lat && lon) geoInfo.textContent = `Ubicación: ${parseFloat(lat).toFixed(6)}, ${parseFloat(lon).toFixed(6)}`;
+                };
+                setInterval(setGeoInfo, 500); // simple refresco
+
+                // Mostrar/ocultar contraseña
+                document.getElementById('togglePwd').addEventListener('click', function () {
+                  const pwd = document.getElementById('password');
+                  pwd.type = (pwd.type === 'password') ? 'text' : 'password';
+                });
+
+                // Validación contraseñas iguales
+                document.getElementById('registerForm').addEventListener('submit', function (e) {
+                  const p1 = document.getElementById('password').value;
+                  const p2 = document.getElementById('password2').value;
+                  const p2Input = document.getElementById('password2');
+                  if (p1 !== p2) {
+                    e.preventDefault();
+                    p2Input.classList.add('is-invalid');
+                    p2Input.focus();
+                  } else {
+                    p2Input.classList.remove('is-invalid');
+                  }
+                });
+
+
+
+            </script>
+
+        </div>
+    </div>
+</body>
+</html>

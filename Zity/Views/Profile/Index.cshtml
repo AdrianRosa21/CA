@@ -1,0 +1,156 @@
+﻿@{
+    ViewData["Title"] = "Mi Cuenta";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- ============================================= -->
+        <!--    BARRA LATERAL DE NAVEGACIÓN DEL PERFIL    -->
+        <!-- ============================================= -->
+        <div class="col-lg-3">
+            <div class="zity-card p-3">
+                @{
+                    // Usamos el ViewData["ActivePage"] que pasamos desde el Controller
+                    var activePage = ViewData["ActivePage"] as string;
+                }
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a asp-action="Index" asp-controller="Profile"
+                           class="nav-link @(activePage == "Profile" ? "active" : "text-dark")">Perfil de Usuario</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="Preferencias" asp-controller="Profile"
+                           class="nav-link @(activePage == "Preferencias" ? "active" : "text-dark")">Preferencias</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="HistorialReportes" asp-controller="Profile"
+                           class="nav-link @(activePage == "Historial" ? "active" : "text-dark")">Historial Reportes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="ParticipacionesForo" asp-controller="Profile"
+                           class="nav-link @(activePage == "Foro" ? "active" : "text-dark")">Participaciones Foro</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="EventosCreados" asp-controller="Profile"
+                           class="nav-link @(activePage == "Eventos" ? "active" : "text-dark")">Eventos Creados</a>
+                    </li>
+                </ul>
+                <hr />
+                <a asp-action="Logout" asp-controller="Account" class="nav-link text-danger">Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- ============================================= -->
+        <!--        CONTENIDO PRINCIPAL: MI CUENTA         -->
+        <!-- ============================================= -->
+        <div class="col-lg-9">
+            <h2 class="mb-4" style="font-family: 'Manrope', sans-serif;">Mi cuenta</h2>
+
+            <!-- Tarjeta de información personal -->
+            <div class="zity-card p-4 mb-4">
+                <div class="d-flex flex-column flex-sm-row align-items-center gap-4 mb-4">
+                    <img src="https://placehold.co/120x120/788294/FFFFFF?text=JP" alt="Foto de perfil" class="rounded-circle" />
+                    <div class="flex-grow-1">
+                        <h4>Josué Kadosh Hernández</h4>
+                        <p class="text-muted">Se unió el 20 de Septiembre, 2025</p>
+                    </div>
+                    <a href="#" class="btn btn-primary">Editar foto de perfil</a>
+                </div>
+
+                <hr />
+
+                <div class="mt-4">
+                    <!-- Fila de datos -->
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">Nombre</div>
+                        <div class="col-sm-8 d-flex justify-content-between align-items-center">
+                            <span>Josué Kadosh</span>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </div>
+                    <!-- Fila de datos -->
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">Apellido</div>
+                        <div class="col-sm-8 d-flex justify-content-between align-items-center">
+                            <span>Palacios Hernández</span>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </div>
+                    <!-- Fila de datos -->
+                    <div class="row mb-3">
+                        <div class="col-sm-4 fw-semibold">Municipio y Comunidad</div>
+                        <div class="col-sm-8 d-flex justify-content-between align-items-center">
+                            <span>San Salvador</span>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        </div>
+                    </div>
+                    <!-- Fila de datos -->
+                    <div class="row">
+                        <div class="col-sm-4 fw-semibold">Correo Electrónico</div>
+                        <div class="col-sm-8 d-flex justify-content-between align-items-center">
+                            <span>josuekph22@gmail.com</span>
+                            <a href="#" class="btn btn-sm btn-outline-secondary disabled">Editar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Sección Contraseña -->
+                <div class="col-md-6 mb-4">
+                    <h4 style="font-family: 'Manrope', sans-serif;">Contraseña</h4>
+                    <a href="#" class="btn btn-primary mt-2">Cambiar contraseña</a>
+                </div>
+
+                <!-- Sección MODO OSCURO -->
+                <div class="col-md-6 mb-4">
+                    <h4 id="theme-title" style="font-family: 'Manrope', sans-serif;"></h4>
+                    <form id="theme-form" method="post" asp-controller="Profile" asp-action="ToggleTheme">
+                        @Html.AntiForgeryToken()
+                        <button id="theme-toggle-btn" type="submit" class="btn btn-primary mt-2"></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const htmlEl = document.documentElement;
+            const themeForm = document.getElementById('theme-form');
+            const themeTitle = document.getElementById('theme-title');
+            const themeBtn = document.getElementById('theme-toggle-btn');
+
+            function updateUI(isDark) {
+                htmlEl.classList.toggle('dark-theme', isDark); // Forma más robusta de añadir/quitar clase
+                themeTitle.textContent = isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+                themeBtn.textContent = isDark ? 'Deshabilitar' : 'Habilitar';
+            }
+
+            // Inicializa la UI con el estado actual del HTML
+            updateUI(htmlEl.classList.contains('dark-theme'));
+
+            // Escucha el evento de envío del formulario
+            themeForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // Evita recargar la página
+
+                const isCurrentlyDark = htmlEl.classList.contains('dark-theme');
+                updateUI(!isCurrentlyDark); // Actualiza la UI al instante
+
+                // Envía la petición al servidor para guardar la preferencia
+                const token = themeForm.querySelector('input[name="__RequestVerificationToken"]').value;
+                fetch(themeForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    }
+                }).catch(err => {
+                    console.error('Error al guardar el tema:', err);
+                    updateUI(isCurrentlyDark); // Si falla, revierte el cambio visualmente
+                });
+            });
+        });
+    </script>
+}

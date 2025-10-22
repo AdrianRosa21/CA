@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "Eventos Creados";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- BARRA LATERAL -->
+        <div class="col-lg-3">
+            <partial name="_ProfileNav" />
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="col-lg-9">
+            <h2 class="mb-4">Eventos</h2>
+
+            <!-- Card de Evento 1 -->
+            <div class="zity-card p-4 mb-4">
+                <h5 class="fw-bold">15 Septiembre 2025</h5>
+                <p class="text-muted">Lunes</p>
+                <div class="d-flex align-items-center gap-4 border-top pt-4 mt-4">
+                    <img src="~/images/bandera_es.jpg" alt="Evento Día de la Independencia" style="width: 120px; height: 80px; object-fit: cover;" class="rounded-3" />
+                    <div class="table-responsive w-100">
+                        <table class="table table-borderless align-middle small mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Descripción</th>
+                                    <th>Lugar</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">15:30 pm</td>
+                                    <td>Celebración del Día de la Independencia</td>
+                                    <td>Plaza Divino Salvador del Mundo</td>
+                                    <td><span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">Activo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Evento 2 -->
+            <div class="zity-card p-4 mb-4">
+                <h5 class="fw-bold">17 Enero 2025</h5>
+                <p class="text-muted">Viernes</p>
+                <div class="d-flex align-items-center gap-4 border-top pt-4 mt-4">
+                    <img src="~/images/torneo_smash.jpg" alt="Torneo de Smash" style="width: 120px; height: 80px; object-fit: cover;" class="rounded-3" />
+                    <div class="table-responsive w-100">
+                        <table class="table table-borderless align-middle small mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Descripción</th>
+                                    <th>Lugar</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">18:40 pm</td>
+                                    <td>Torneo de Smash</td>
+                                    <td>BINAES</td>
+                                    <td><span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">Inactivo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

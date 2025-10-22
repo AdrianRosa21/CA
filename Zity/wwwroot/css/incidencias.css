@@ -1,0 +1,50 @@
+﻿/* 🔒 Todo queda encerrado en #incidencias-page */
+#incidencias-page {
+    /* variables locales solo dentro de la vista */
+    --bg: #ffffff;
+    --text: #0b0b0d;
+    --muted: #676b78;
+    --border: #e9e9ee;
+    --brand: #2d6bff;
+    --brand-2: #2462ff;
+    --brand-3: #0e48ff;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 24px;
+    font-family: "Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color: var(--text);
+    background: var(--bg);
+}
+
+    /* ❌ quitamos cualquier regla global como body, html, .container, etc. */
+
+    /* Utilidades internas */
+    #incidencias-page .text-orange {
+        color: #fd7e14 !important;
+    }
+
+    /* Rating solo dentro de la vista */
+    #incidencias-page .rating .btn {
+        padding: 0 .1rem;
+        line-height: 1
+    }
+
+    #incidencias-page .rating i {
+        font-size: 1.1rem;
+        color: #ffc107
+    }
+
+    #incidencias-page .rating .btn:disabled {
+        opacity: 1
+    }
+
+    /* Imagen de card solo aquí */
+    #incidencias-page .card-img-top {
+        object-fit: cover;
+        height: 260px
+    }
+
+    /* (opcional) ajustes del mapa solo dentro */
+    #incidencias-page #map {
+        background: #f8fafc;
+    }

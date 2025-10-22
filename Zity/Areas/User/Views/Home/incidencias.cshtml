@@ -1,0 +1,276 @@
+﻿@{
+    ViewData["Title"] = "Incidencias";
+}
+
+@section Styles {
+    <!-- Fuentes / Bootstrap / Iconos (si ya los tienes globales, puedes quitar estas 3 líneas) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Estilos de esta vista (aislados bajo #incidencias-page) -->
+    <link rel="stylesheet" href="~/css/incidencias.css" asp-append-version="true" />
+}
+
+<div id="incidencias-page" class="container py-5">
+    <h1 class="fw-bold mb-4">Incidencias recientes</h1>
+
+    <!-- Contenedor para cards dinámicos -->
+    <div class="row g-3" id="incCards"></div>
+
+    <hr class="my-4" />
+
+    <!-- MAPA + PANEL -->
+    <div class="row g-3">
+        <div class="col-12 col-lg-8">
+            <div id="map" class="border rounded" style="height: 70vh;"></div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Cómo usar</h5>
+                    <ol class="mb-3">
+                        <li>Haz clic en el mapa.</li>
+                        <li>Completa el modal y guarda.</li>
+                    </ol>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <button id="exportJson" class="btn btn-outline-secondary">⬇️ Exportar JSON</button>
+                        <button id="importJsonBtn" class="btn btn-outline-secondary">⬆️ Importar JSON</button>
+                        <input id="importJson" type="file" accept="application/json" hidden />
+                    </div>
+
+                    <div id="stats" class="small mb-3"></div>
+
+                    <!-- Resumen (tabla) -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table id="tablaIncidencias" class="table align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="ps-3">Título</th>
+                                            <th>Ciudad</th>
+                                            <th>Municipio</th>
+                                            <th>Hora</th>
+                                            <th>Fecha</th>
+                                            <th>Nivel de urgencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody><!-- filas dinámicas --></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Resumen -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nueva incidencia -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form id="incForm" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva incidencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Título -->
+                <div class="mb-3">
+                    <label class="form-label">Título</label>
+                    <input name="titulo" class="form-control" placeholder="Ej. Bache peligroso" required />
+                </div>
+
+                <!-- Categoría / Severidad -->
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Categoría</label>
+                        <select name="categoria" class="form-select">
+                            <optgroup label="Vialidad y tránsito">
+                                <option value="bache" selected>Bache</option>
+                                <option value="accidente_vial">Accidente vial</option>
+                                <option value="semaforo_danado">Semáforo dañado</option>
+                                <option value="senalizacion_fallida">Señalización fallida</option>
+                                <option value="obstaculo_en_via">Obstáculo en vía</option>
+                                <option value="parqueo_indebido">Parqueo indebido</option>
+                                <option value="hueco_zanja">Hueco / zanja</option>
+                                <option value="aceras_danadas">Aceras dañadas</option>
+                                <option value="calzada_danada">Pavimento dañado</option>
+                            </optgroup>
+                            <optgroup label="Alumbrado y energía">
+                                <option value="alumbrado">Alumbrado</option>
+                                <option value="poste_caido">Poste caído</option>
+                                <option value="cableado_caido">Cableado caído</option>
+                                <option value="cortocircuito">Cortocircuito / chispas</option>
+                                <option value="transformador_averiado">Transformador averiado</option>
+                            </optgroup>
+                            <optgroup label="Agua y saneamiento">
+                                <option value="fuga_agua">Fuga de agua</option>
+                                <option value="falta_de_agua">Falta de agua</option>
+                                <option value="alcantarillado_taponado">Alcantarillado taponado</option>
+                                <option value="aguas_negras">Aguas negras</option>
+                                <option value="inundacion">Inundación</option>
+                            </optgroup>
+                            <optgroup label="Medio ambiente">
+                                <option value="basura_acumulada">Basura acumulada</option>
+                                <option value="escombros">Escombros</option>
+                                <option value="incendio_quema">Incendio / quema</option>
+                                <option value="ruido_excesivo">Ruido excesivo</option>
+                                <option value="arbol_caido">Árbol caído</option>
+                                <option value="poda_urgente">Poda urgente</option>
+                                <option value="fauna_peligrosa">Fauna peligrosa</option>
+                                <option value="parque_deteriorado">Parque deteriorado</option>
+                            </optgroup>
+                            <optgroup label="Seguridad y convivencia">
+                                <option value="seguridad">Seguridad</option>
+                                <option value="vandalismo_graffiti">Vandalismo / graffiti</option>
+                                <option value="alteracion_orden">Alteración del orden</option>
+                                <option value="comercio_informal">Comercio informal</option>
+                            </optgroup>
+                            <optgroup label="Urbanismo">
+                                <option value="construccion_irregular">Construcción irregular</option>
+                                <option value="lote_baldio_sucio">Lote baldío sucio</option>
+                            </optgroup>
+                            <optgroup label="Salud pública">
+                                <option value="plagas_zancudos">Plagas / zancudos</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Severidad</label>
+                        <select name="severidad" class="form-select">
+                            <option value="baja">Baja</option>
+                            <option value="media" selected>Media</option>
+                            <option value="alta">Alta</option>
+                            <option value="critica">Crítica</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Icono del pin -->
+                <div class="mt-3">
+                    <label class="form-label">Icono del pin</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <input class="btn-check" type="radio" name="icono" id="ic-alert" value="exclamation-circle-fill" checked>
+                        <label class="btn btn-outline-secondary" for="ic-alert" title="Alerta"><i class="bi bi-exclamation-circle-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-triangle" value="exclamation-triangle-fill">
+                        <label class="btn btn-outline-secondary" for="ic-triangle" title="Peligro"><i class="bi bi-exclamation-triangle-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-cone" value="cone-striped">
+                        <label class="btn btn-outline-secondary" for="ic-cone" title="Obras"><i class="bi bi-cone-striped fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-geo" value="geo-alt-fill">
+                        <label class="btn btn-outline-secondary" for="ic-geo" title="Ubicación"><i class="bi bi-geo-alt-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-flash" value="flash-fill">
+                        <label class="btn btn-outline-secondary" for="ic-flash" title="Electricidad"><i class="bi bi-flash-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-tools" value="tools">
+                        <label class="btn btn-outline-secondary" for="ic-tools" title="Mantenimiento"><i class="bi bi-tools fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-water" value="droplet-fill">
+                        <label class="btn btn-outline-secondary" for="ic-water" title="Agua"><i class="bi bi-droplet-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-tree" value="tree-fill">
+                        <label class="btn btn-outline-secondary" for="ic-tree" title="Vegetación"><i class="bi bi-tree-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-fire" value="fire">
+                        <label class="btn btn-outline-secondary" for="ic-fire" title="Incendio"><i class="bi bi-fire fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-shield" value="shield-exclamation">
+                        <label class="btn btn-outline-secondary" for="ic-shield" title="Seguridad"><i class="bi bi-shield-exclamation fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-bug" value="bug-fill">
+                        <label class="btn btn-outline-secondary" for="ic-bug" title="Plagas"><i class="bi bi-bug-fill fs-4"></i></label>
+                        <input class="btn-check" type="radio" name="icono" id="ic-megaphone" value="megaphone">
+                        <label class="btn btn-outline-secondary" for="ic-megaphone" title="Ruido"><i class="bi bi-megaphone fs-4"></i></label>
+                    </div>
+                    <div class="form-text">El color del icono lo da la severidad.</div>
+                </div>
+
+                <!-- Ciudad / Nivel urgencia -->
+                <div class="row g-2 mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Ciudad</label>
+                        <input name="ciudad" class="form-control" value="San Salvador" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de urgencia</label>
+                        <select name="nivel_urgencia" class="form-select">
+                            <option value="Baja" selected>Baja</option>
+                            <option value="Media">Media</option>
+                            <option value="Alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Municipio (auto) -->
+                <div class="mt-3">
+                    <label class="form-label">Municipio</label>
+                    <input name="municipio" id="municipio" class="form-control" readonly placeholder="Se autocompleta al elegir en el mapa" />
+                </div>
+
+
+                <!-- Lat / Lng -->
+                <div class="row g-2 mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Lat</label>
+                        <input name="lat" class="form-control" readonly />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Lng</label>
+                        <input name="lng" class="form-control" readonly />
+                    </div>
+                    <div class="form-text">La posición se llena al hacer clic en el mapa.</div>
+                </div>
+
+                <!-- Descripción / Dirección -->
+                <div class="mt-3">
+                    <label class="form-label">Descripción <small class="text-muted">(máx. 70)</small></label>
+                    <textarea name="descripcion" class="form-control" maxlength="70" rows="2" placeholder="Ej. Bache profundo en carril derecho"></textarea>
+                    <div class="form-text"><span id="descCount">0/70</span></div>
+                </div>
+                <div class="mt-3">
+                    <label class="form-label">Dirección referencial</label>
+                    <input name="direccion_referencial" class="form-control" placeholder="Ej. Frente a ferretería La Central" />
+                </div>
+
+                <!-- FOTO OBLIGATORIA -->
+                <div class="mt-3">
+                    <label class="form-label">Foto (obligatoria)</label>
+                    <input type="file" accept="image/*" name="foto" id="foto" class="form-control" required>
+                    <div class="form-text">Se usará como evidencia y portada de la tarjeta.</div>
+                    <img id="fotoPreview" class="img-fluid rounded mt-2 d-none" alt="Vista previa" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar pin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast: clic fuera de la zona -->
+<div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index:1100">
+    <div id="toastOutside" class="toast align-items-center text-bg-warning border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body"><i class="bi bi-geo-alt-fill me-2"></i> Solo se puede reportar dentro de <b>San Salvador Este</b>.</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Bootstrap (si ya está global, puedes quitarlo) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet + Turf -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@@turf/turf@6.5.0/turf.min.js"></script>
+
+    <!-- JS de esta vista -->
+    <script src="~/js/incidencias.js" asp-append-version="true"></script>
+    <script>
+        // URL del endpoint para subir la foto (área User)
+        window.__ZITY_UPLOAD_URL__ = '@Url.Action("UploadArchivo", "Home", new { area = "User" })';
+    </script>
+}

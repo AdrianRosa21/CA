@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Historial de Reportes";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- RENDERIZA LA BARRA LATERAL REUTILIZABLE -->
+        <div class="col-lg-3">
+            <partial name="_ProfileNav" />
+        </div>
+
+        <!-- CONTENIDO ÚNICO DE LA PÁGINA DE HISTORIAL -->
+        <div class="col-lg-9">
+            <h2 class="mb-4">Historial</h2>
+
+            <div class="zity-card p-2">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-borderless">
+                            <tr>
+                                <th class="py-3 px-4">Título</th>
+                                <th></th>
+                                <th class="py-3 px-4">Ciudad</th>
+                                <th class="py-3 px-4">Hora</th>
+                                <th class="py-3 px-4">Fecha</th>
+                                <th class="py-3 px-4">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Fila de ejemplo 1 -->
+                            <tr class="border-top">
+                                <td class="px-4 fw-semibold">Accidente carretera Longitudinal</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-three-dots"></i></a></td>
+                                <td class="px-4 text-muted">San Salvador</td>
+                                <td class="px-4 text-muted">15:12</td>
+                                <td class="px-4 text-muted">07/09/25</td>
+                                <td class="px-4"><span class="badge text-bg-warning">Recibida</span></td>
+                            </tr>
+                            <!-- Fila de ejemplo 2 -->
+                            <tr>
+                                <td class="px-4 fw-semibold">Accidente colonia médica</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-three-dots"></i></a></td>
+                                <td class="px-4 text-muted">San Salvador</td>
+                                <td class="px-4 text-muted">02:53</td>
+                                <td class="px-4 text-muted">03/09/25</td>
+                                <td class="px-4"><span class="badge text-bg-success">Resuelta</span></td>
+                            </tr>
+                            <!-- Fila de ejemplo 3 -->
+                            <tr>
+                                <td class="px-4 fw-semibold">Accidente Bulevar Tutunichapa</td>
+                                <td><a href="#" class="btn btn-sm btn-outline-secondary"><i class="bi bi-three-dots"></i></a></td>
+                                <td class="px-4 text-muted">San Salvador</td>
+                                <td class="px-4 text-muted">08:47</td>
+                                <td class="px-4 text-muted">22/08/25</td>
+                                <td class="px-4"><span class="badge text-bg-danger">Rechazada</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

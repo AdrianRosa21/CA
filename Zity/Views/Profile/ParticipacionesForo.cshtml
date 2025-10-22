@@ -1,0 +1,60 @@
+﻿@{
+    ViewData["Title"] = "Participaciones en Foros";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- BARRA LATERAL -->
+        <div class="col-lg-3">
+            <partial name="_ProfileNav" />
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="col-lg-9">
+            <h2 class="mb-4">Participaciones</h2>
+
+            <div class="zity-card p-2">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-borderless">
+                            <tr>
+                                <th class="py-3 px-4">Título foro</th>
+                                <th class="py-3 px-4">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Fila de ejemplo 1 -->
+                            <tr class="border-top">
+                                <td class="px-4">
+                                    <a href="#" class="fw-semibold text-decoration-none">Intento Asalto</a>
+                                </td>
+                                <td class="px-4"><span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">Activa</span></td>
+                            </tr>
+                            <!-- Fila de ejemplo 2 -->
+                            <tr>
+                                <td class="px-4">
+                                    <a href="#" class="fw-semibold text-decoration-none">Tráfico Bulevar del Ejército</a>
+                                </td>
+                                <td class="px-4"><span class="badge bg-success-subtle text-success-emphasis border border-success-subtle">Activa</span></td>
+                            </tr>
+                            <!-- Fila de ejemplo 3 -->
+                            <tr>
+                                <td class="px-4">
+                                    <a href="#" class="fw-semibold text-decoration-none">Colonia Médica</a>
+                                </td>
+                                <td class="px-4"><span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Ausente</span></td>
+                            </tr>
+                            <!-- Fila de ejemplo 4 -->
+                            <tr>
+                                <td class="px-4">
+                                    <a href="#" class="fw-semibold text-decoration-none">Colonia San Francisco</a>
+                                </td>
+                                <td class="px-4"><span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">Inactivo</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
