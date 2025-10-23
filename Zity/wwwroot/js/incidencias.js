@@ -7,6 +7,9 @@ let markers = [];         // incidencias en memoria
 let leafletMarkers = [];
 let reportModal;
 
+const ESPECIAL_LABEL = 'Incidencia especial??';
+const ESPECIAL_KEY = ESPECIAL_LABEL.toLowerCase();
+
 // ===== UI =====
 const exportBtn = document.getElementById('exportJson');
 const importBtn = document.getElementById('importJsonBtn');
@@ -144,10 +147,18 @@ function sevColorClass(sev) {
         default: return 'text-success';
     }
 }
-function makeDivIcon(iconName, sev) {
+function isIncidenciaEspecial(target) {
+    if (target && typeof target === 'object') {
+        return isIncidenciaEspecial(target.nivel_urgencia);
+    }
+    return (target || '').toString().toLowerCase() === ESPECIAL_KEY;
+}
+
+function makeDivIcon(iconName, sev, especial = false) {
     const cls = sevColorClass(sev);
+    const ringCls = especial ? 'inc-special-ring' : '';
     const html = `
-    <div class="bg-white rounded-circle border shadow-sm d-flex align-items-center justify-content-center"
+    <div class="bg-white rounded-circle border shadow-sm d-flex align-items-center justify-content-center ${ringCls}"
          style="width:28px;height:28px;">
       <i class="bi bi-${iconName} ${cls}" style="font-size:16px;line-height:1;"></i>
     </div>`;
@@ -165,11 +176,14 @@ function truncate(s = '', n = 70) { return s.length > n ? s.slice(0, n - 1) + '�
 
 // ===== Pins + UI =====
 function addLeafletMarker(item) {
-    const m = L.marker([item.lat, item.lng], { icon: makeDivIcon(item.icono || 'exclamation-circle-fill', item.severidad) }).addTo(map);
+    const especial = isIncidenciaEspecial(item);
+    const m = L.marker([item.lat, item.lng], { icon: makeDivIcon(item.icono || 'exclamation-circle-fill', item.severidad, especial) }).addTo(map);
     const imgHtml = item.coverUrl ? `<img src="${item.coverUrl}" style="width:100%;max-width:220px;border-radius:8px;margin-bottom:6px">` : '';
+    const especialBadge = especial ? `<div class="mb-2"><span class="badge badge-inc-especial"><i class="bi bi-stars me-1"></i>${ESPECIAL_LABEL}</span></div>` : '';
     m.bindPopup(`
     <div class="small">
       ${imgHtml}
+      ${especialBadge}
       <div class="fw-semibold">${escapeHtml(item.titulo)}</div>
       <div>${escapeHtml(item.categoria)} — Sev: ${escapeHtml(item.severidad)}</div>
       <div class="mt-1">${escapeHtml(item.ciudad)} · ${item.hora} · ${item.fecha}</div>
@@ -186,32 +200,45 @@ function addLeafletMarker(item) {
 function updateStats() {
     const total = markers.length;
     const agg = { baja: 0, media: 0, alta: 0, critica: 0 };
-    for (const it of markers) { const k = (it.severidad || '').toLowerCase(); agg[k] = (agg[k] || 0) + 1; }
+    let especiales = 0;
+    for (const it of markers) {
+        const k = (it.severidad || '').toLowerCase();
+        agg[k] = (agg[k] || 0) + 1;
+        if (isIncidenciaEspecial(it)) especiales += 1;
+    }
     statsBox.innerHTML = `
     <div class="fw-semibold mb-1">Resumen</div>
     <div class="small">Total pines: <b>${total}</b></div>
-    <div class="small">baja: <b>${agg.baja || 0}</b> · media: <b>${agg.media || 0}</b> · alta: <b>${agg.alta || 0}</b> · critica: <b>${agg.critica || 0}</b></div>`;
+    <div class="small">baja: <b>${agg.baja || 0}</b> · media: <b>${agg.media || 0}</b> · alta: <b>${agg.alta || 0}</b> · critica: <b>${agg.critica || 0}</b></div>
+    <div class="small ${especiales ? '' : 'text-muted'}">${ESPECIAL_LABEL}: <b>${especiales}</b></div>`;
 }
 
 function renderTable() {
-    tbody.innerHTML = markers.map(it => `
+    tbody.innerHTML = markers.map(it => {
+        const especial = isIncidenciaEspecial(it);
+        const badge = especial ? `<span class="badge badge-inc-especial ms-2">${ESPECIAL_LABEL}</span>` : '';
+        const iconRing = especial ? 'inc-special-ring' : '';
+        return `
     <tr>
       <td class="ps-3">
         <div class="d-flex align-items-start gap-2">
-          <i class="bi bi-${it.icono || 'exclamation-circle-fill'} ${sevColorClass(it.severidad)} fs-5 mt-1"></i>
+          <span class="d-inline-flex align-items-center justify-content-center ${iconRing} mt-1" style="width:28px;height:28px;">
+            <i class="bi bi-${it.icono || 'exclamation-circle-fill'} ${sevColorClass(it.severidad)} fs-5"></i>
+          </span>
           <div>
-            <div class="fw-semibold lh-sm">${escapeHtml(it.titulo)}</div>
+            <div class="fw-semibold lh-sm">${escapeHtml(it.titulo)}${badge}</div>
             ${it.descripcion ? `<div class="text-muted small">${escapeHtml(truncate(it.descripcion, 70))}</div>` : ''}
             ${it.direccion_referencial ? `<div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>${escapeHtml(it.direccion_referencial)}</div>` : ''}
           </div>
         </div>
       </td>
       <td class="fw-semibold">${escapeHtml(it.ciudad || '-')}</td>
-      <td class="fw-semibold">${escapeHtml(it.municipio || '-')}</td> 
+      <td class="fw-semibold">${escapeHtml(it.municipio || '-')}</td>
       <td class="text-nowrap">${it.hora}</td>
       <td class="text-nowrap">${it.fecha}</td>
       <td>${escapeHtml(it.nivel_urgencia || '-')}</td>
-    </tr>`).join('');
+    </tr>`;
+    }).join('');
 }
 
 // ==== Cards con rating ====
@@ -219,12 +246,14 @@ function cardTemplate(it) {
     const avg = (it.ratings?.avg || 0).toFixed(1);
     const count = it.ratings?.count || 0;
     const stars = [1, 2, 3, 4, 5].map(n => `<button class="btn star-btn" data-star="${n}" aria-label="${n} estrellas"><i class="bi ${(it.ratings?.byUser?.[currentUserId] || 0) >= n ? 'bi-star-fill' : 'bi-star'}"></i></button>`).join('');
+    const especial = isIncidenciaEspecial(it);
+    const especialBadge = especial ? `<span class="badge badge-inc-especial ms-2">${ESPECIAL_LABEL}</span>` : '';
     return `
     <div class="col-md-6 col-lg-4" id="card-${it.id}">
-      <article class="card shadow-sm h-100">
+      <article class="card shadow-sm h-100 ${especial ? 'inc-card-special' : ''}">
         <img src="${it.coverUrl || 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'}" class="card-img-top" alt="Incidencia">
         <div class="card-body">
-          <h5 class="card-title mb-1">${escapeHtml(it.titulo)}</h5>
+          <h5 class="card-title mb-1 d-flex align-items-center">${escapeHtml(it.titulo)}${especialBadge}</h5>
           <p class="card-text text-muted mb-2">${escapeHtml(it.ciudad || '')}</p>
           <p class="card-text mb-1">Urgencia: <strong class="${sevColorClass(it.severidad)} text-capitalize">${escapeHtml(it.severidad)}</strong></p>
           <p class="card-text mb-2">Fecha: <strong>${it.fecha}</strong></p>
@@ -294,8 +323,8 @@ map.on('click', (e) => {
     muniInput.value = muni || 'Fuera de municipios definidos';
 
     if (!muni) {
-        
-         outsideToast?.show(); return;
+        outsideToast?.show();
+        return;
     }
 
 
@@ -412,7 +441,11 @@ importInput?.addEventListener('change', async (e) => {
         leafletMarkers.forEach(m => m.remove()); leafletMarkers = [];
         markers = Array.isArray(json.incidencias) ? json.incidencias : [];
         incCards.innerHTML = '';
-        markers.forEach(it => { it.icono ||= 'exclamation-circle-fill'; addLeafletMarker(it); addIncidentCard(it); });
+        markers.forEach(it => {
+            it.icono ||= 'exclamation-circle-fill';
+            addLeafletMarker(it);
+            addIncidentCard(it);
+        });
         updateStats(); renderTable();
         alert(`Importadas ${markers.length} incidencias.`);
     } catch { alert('Archivo JSON inválido.'); }

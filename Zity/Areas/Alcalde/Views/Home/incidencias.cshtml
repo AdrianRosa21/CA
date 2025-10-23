@@ -58,6 +58,51 @@
     </style>
     <!-- Estilos de esta vista (aislados bajo #incidencias-page) -->
     <link rel="stylesheet" href="~/css/incidencias.css" asp-append-version="true" />
+    <style>
+        #incidencias-page .inc-card-special {
+            border: 2px solid #0d6efd;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.25);
+            position: relative;
+        }
+
+        #incidencias-page .inc-card-special::after {
+            content: "Incidencia especial??";
+            position: absolute;
+            top: 12px;
+            right: -10px;
+            background: #0d6efd;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35);
+        }
+
+        #incidencias-page .inc-special-ring {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #incidencias-page .inc-special-ring::before {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 999px;
+            border: 2px solid rgba(13, 110, 253, 0.75);
+            box-shadow: 0 0 12px rgba(13, 110, 253, 0.4);
+            pointer-events: none;
+        }
+
+        #incidencias-page .badge-inc-especial {
+            background: rgba(13, 110, 253, 0.12);
+            color: #0d6efd;
+            border: 1px solid rgba(13, 110, 253, 0.4);
+            font-weight: 600;
+        }
+    </style>
 }
 
 <div id="incidencias-page" class="container py-5">
