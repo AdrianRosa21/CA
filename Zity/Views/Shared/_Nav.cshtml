@@ -36,7 +36,7 @@
                 {
                     <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Regístrate</a></li>
                 }
-                else if (roleId == 3)
+                else if (roleId == 2)
                 {
 
                     <!-- ADMIN -->
@@ -47,16 +47,19 @@
                     <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Usuarios</a></li>
                     <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="Moderation" asp-action="Index">Moderación</a></li>
                 }
-                else if (roleId == 2)
+                else if (roleId == 3)
                 {
-
                     <!-- ALCALDE -->
                     <li class="nav-item">
                         <a class="nav-link @(Active("Alcalde", "Home") ? "active" : "")"
                            asp-area="Alcalde" asp-controller="Home" asp-action="Index">Tablero</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" asp-area="Alcalde" asp-controller="Proyectos" asp-action="Index">Proyectos</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-area="Alcalde" asp-controller="Comunicados" asp-action="Index">Comunicados</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Alcalde" asp-controller="Home" asp-action="Eventos">Proyectos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="Alcalde" asp-controller="Home" asp-action="Incidencias">Comunicados</a>
+                    </li>
                 }
                 else
                 {

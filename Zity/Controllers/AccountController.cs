@@ -64,7 +64,6 @@ namespace Zity.Controllers
             HttpContext.Session.SetString("UserName", $"{user.nombre} {user.apellido}");
             HttpContext.Session.SetInt32("UserRoleId", user.id_rol); // <-- CLAVE: 1=User, 2=Alcalde, 3=Admin
 
-            // Redirección por ID de rol
             return user.id_rol switch
             {
                 3 => RedirectToAction("Index", "Home", new { area = "Alcalde" }),
